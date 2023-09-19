@@ -1,8 +1,14 @@
-FROM maven:3.8.5-openjdk-17 AS build
-COPY . . 
-RUN mvn clean package -DskipTests
+# Sử dụng ảnh Java mở rộng
+FROM adoptopenjdk:17-jre-hotspot
 
-FROM openjdk:17.0.1-jdk0-slim
-COPY --from=build /target/demoThymeleaf-0.0.1-SNAPSHOT.jar demoThymeleaf.jar
+# Thiết lập thư mục làm việc
+WORKDIR /app
+
+# Sao chép tất cả các tệp từ thư mục target của dự án Spring Boot vào thư mục /app trong container
+COPY target/*jar /app/app.jar
+
+# Mở cổng mạng cho ứng dụng
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","demoThymeleaf.jar"]
+
+# Khởi chạy ứng dụng khi container được khởi động
+CMD ["java", "-jar", "app.jar"]
