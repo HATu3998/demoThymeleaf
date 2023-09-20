@@ -1,14 +1,13 @@
-# Sử dụng ảnh Java mở rộng
-FROM adoptopenjdk:17-jre-hotspot
+ 
 
-# Thiết lập thư mục làm việc
-WORKDIR /app
+FROM ubuntu:latest AS build
+RUN apt-get update
+RUN apt-get install openjdk-17-jdk -y
+COPY . . 
+RUN ./gradlew bootJar --no-daemon
 
-# Sao chép tất cả các tệp từ thư mục target của dự án Spring Boot vào thư mục /app trong container
-COPY target/*jar /app/app.jar
-
-# Mở cổng mạng cho ứng dụng
+FROM openjdk:17-jdk-slim
 EXPOSE 8080
+COPY --from=build /build/libs/spring-render-1.jar app.jar
 
-# Khởi chạy ứng dụng khi container được khởi động
-CMD ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
