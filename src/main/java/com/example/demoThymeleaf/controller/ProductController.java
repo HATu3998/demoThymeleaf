@@ -51,6 +51,17 @@ public class ProductController {
 		
 	}
 	
+	@PostMapping("/insertAuto")
+	public ResponseEntity<ResponseObject> insertProductAuto(){
+		Product newProduct=new Product("auto",2024,10,"");
+		List<Product> foundProduct=reposity.findByProductName(newProduct.getProductName().trim());
+		if(foundProduct.size()>0) {
+			return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ResponseObject("failed","product name already taken", ""));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("ok","insert product suscess", reposity.save(newProduct)));
+		
+	}
+	
 	@PutMapping("/{id}")
 	public ResponseEntity<ResponseObject> updateProduct(@RequestBody Product newProduct,@PathVariable Long id){
 		Product updateP=reposity.findById(id).map(
